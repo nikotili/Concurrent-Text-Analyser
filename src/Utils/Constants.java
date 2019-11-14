@@ -6,8 +6,9 @@ public final class Constants {
     public static final String NO_PATH_ERROR = "Please specify folder path";
     public static final String EMPTY_STRING = "";
     public static final int NUMBER_OF_THREADS = 50;
-    public static final Long NO_OCCURRENCES = 0L;
-    public static final Long ONE_LONG = 1L;
     public static final String SPECIAL_CHARS_REGEX = "(?!')\\p{P}";
+    public static final int ELEMENTS_TO_DISPLAY = 5;
+    public static final long DISPLAYER_SLEEP_INTERVAL  = 500;
+
 
 }

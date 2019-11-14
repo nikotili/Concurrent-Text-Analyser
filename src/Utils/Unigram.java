@@ -1,3 +1,7 @@
+package Utils;
+
+import Utils.Sequence;
+
 public class Unigram extends Sequence {
     public static final int UNIGRAM_LENGTH = 1;
 

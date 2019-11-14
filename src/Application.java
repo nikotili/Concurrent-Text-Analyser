@@ -1,4 +1,5 @@
 import Utils.Constants;
+import Utils.DisplayData;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,7 +25,6 @@ public class Application {
 //            String folderPath = args[0];
             Application application = new Application();
             String folderPath = "C:\\Users\\User\\Desktop\\test";
-
 
             application.readFiles(folderPath);
         }
@@ -53,5 +53,9 @@ public class Application {
         return Files
                 .walk(folderPath)
                 .filter(file -> file.getFileName().toString().endsWith(Constants.TXT_SUFFIX));
+    }
+
+    private void displayData() {
+
     }
 }
