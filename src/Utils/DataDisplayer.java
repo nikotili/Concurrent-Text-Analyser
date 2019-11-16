@@ -12,7 +12,7 @@ public class DataDisplayer implements Runnable {
             while (true) {
                 Thread.sleep(Constants.DISPLAYER_SLEEP_INTERVAL);
                 System.out.println(FileConsumer.getNumOfProcessedFiles() + " files processed");
-                if (FileConsumer.getNumOfProcessedFiles().get() == 408) {
+                if (FileConsumer.getNumOfProcessedFiles() == 1) {
                     System.out.println("Total words: " + sharedRepository.getCurrentTotalWordCount());
                     System.out.println("Standard deviation: " + sharedRepository.computeAndGetStandardDeviationOnWordCount());
                 }
@@ -24,6 +24,9 @@ public class DataDisplayer implements Runnable {
                 System.out.println(wordList);
                 System.out.println("unigram entropy: " + sharedRepository.computeAndGetUnigramEntropy());
                 System.out.println("bigram entropy: " + sharedRepository.computeAndGetBigramEntropy());
+                if (FileConsumer.getNumOfProcessedFiles() == 1) {
+                    System.exit(0);
+                }
             }
         }
         catch (InterruptedException e) {

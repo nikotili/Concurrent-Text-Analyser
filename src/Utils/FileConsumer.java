@@ -3,6 +3,7 @@ package Utils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,7 +13,8 @@ import java.util.regex.Pattern;
 
 public class FileConsumer<P extends Path> implements Consumer<P> {
 
-    private static final Pattern PATTERN = Pattern.compile("\\s+");
+    private static final Pattern PATTERN = Pattern.compile(Constants.WHITE_SPACES_REGEX);
+
     private static final ExecutorService THREAD_POOL = Executors.newFixedThreadPool(Constants.NUMBER_OF_THREADS);
     private static SharedRepository sharedRepository;
     private static AtomicInteger numOfProcessedFiles;
@@ -29,13 +31,32 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
     }
 
 
+    public static void main(String[] args) {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("s1 fas da=fasd as asd as fas");
+        list.add("s2=fas sadg ewawsd  gfads asd fasd a g we as");
+        list.add("s3f sdsdfsdsdfs$@#@$%@hgjtwea ss  rd ");
+        list.add("s4!@#$%^&*(*&^%$#@Wdfv");
+        list.add("s5 sd a");
+        list.add("s6fe }{}{}/'asd ");
+        list.add("    ");
+        list.add("s8asd");
+        list.add("s9a }s");
+        list.add("s10\"");
+
+        list.stream()
+                .flatMap(PATTERN::splitAsStream)
+                .map(line -> line.replaceAll("\\W", Constants.EMPTY_STRING))
+                .forEach(System.out::println);
+    }
+
+
     private void loadFile(P path) {
         AtomicLong numOfWordsInCurrentFile = new AtomicLong(0L);
-//        System.out.println("Loading file " + path.getFileName() + " by thread " + Thread.currentThread().getName());
         try {
                 Files.lines(path)
-                        .map(line -> line.replaceAll(Constants.SPECIAL_CHARS_REGEX, Constants.EMPTY_STRING))
                         .flatMap(PATTERN::splitAsStream)
+                        .map(s -> s.replaceAll(Constants.SPECIAL_CHARS_REGEX, Constants.EMPTY_STRING))
                         .filter(s -> !isStopWord(s))
                         .map(Word::new)
                         .forEach(word -> processWord(numOfWordsInCurrentFile, word));
@@ -62,18 +83,18 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
 
     private boolean isStopWord(String s) {
-        return Constants.STOP_WORDS.contains(s);
+        return Constants.STOP_WORDS.contains(s)
+                || s.trim().equals("");
     }
 
     private void extractSequences(Word word) {
-//        System.out.println("word: " + word + ", count = " + ++c);
         word.getUnigramStream().forEach(sharedRepository::putInUnigramMap);
         word.getBigramStream().forEach(sharedRepository::putInBigramMap);
         sharedRepository.putInWordMap(word);
     }
 
 
-    public static AtomicInteger getNumOfProcessedFiles() {
-        return numOfProcessedFiles;
+    public static int getNumOfProcessedFiles() {
+        return numOfProcessedFiles.get();
     }
 }

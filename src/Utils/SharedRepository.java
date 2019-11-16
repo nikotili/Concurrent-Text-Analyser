@@ -29,7 +29,22 @@ public class SharedRepository {
         return sharedRepository;
     }
 
+    public static void main(String[] args) {
+        SharedRepository sharedRepository = getInstance();
 
+        sharedRepository.wordMap.put(new Word("w1"), 23L);
+        sharedRepository.wordMap.put(new Word("w2"), 331L);
+        sharedRepository.wordMap.put(new Word("w3"), 32L);
+        sharedRepository.wordMap.put(new Word("w4"), 31L);
+        sharedRepository.wordMap.put(new Word("w5"), 86L);
+        sharedRepository.wordMap.put(new Word("w6"), 35L);
+        sharedRepository.wordMap.put(new Word("w7"), 3L);
+        sharedRepository.wordMap.put(new Word("w8"), 3L);
+        sharedRepository.wordMap.put(new Word("w9"), 3L);
+        sharedRepository.wordMap.put(new Word("w0"), 3L);
+
+        System.out.println(sharedRepository.computeAndGetSequenceEntropy(sharedRepository.wordMap));
+    }
 
     public ConcurrentHashMap<String, AtomicLong> getFileWordCountMap() {
         return fileWordCountMap;
@@ -66,12 +81,11 @@ public class SharedRepository {
 
     private <T extends Sequence> double computeAndGetSequenceEntropy(ConcurrentHashMap<T, Long> map) {
         final long totalSequences = getCurrentTotalSequenceCount(map);
-        double entropy = -1 * map
+        return -1 * map
                 .values()
                 .stream()
                 .map(value -> pTimesLogP(value, totalSequences))
                 .reduce(0D, Double::sum);
-        return entropy;
     }
 
     private static double pTimesLogP(Long count, long totalCount) {

@@ -11,8 +11,7 @@ import java.util.stream.Stream;
 
 public class Application {
     private static final FileConsumer<Path> fileConsumer = new FileConsumer<>();
-    private Application() {
-    }
+    private Application() {}
 
     public static void main(String[] args) {
         try {
@@ -64,9 +63,5 @@ public class Application {
         return Files
                 .walk(folderPath)
                 .filter(file -> file.getFileName().toString().endsWith(Constants.TXT_SUFFIX));
-    }
-
-    private void displayData() {
-
     }
 }
