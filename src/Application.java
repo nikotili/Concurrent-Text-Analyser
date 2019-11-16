@@ -1,16 +1,10 @@
 import Utils.Constants;
-import Utils.DisplayData;
+import Utils.FileConsumer;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,13 +18,30 @@ public class Application {
         try {
 //            String folderPath = args[0];
             Application application = new Application();
-            String folderPath = "C:\\Users\\User\\Desktop\\test";
 
-            application.readFiles(folderPath);
+            String folderPath = "C:\\Users\\User\\Desktop\\test";
+            application.start(folderPath);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             System.out.println(Constants.NO_PATH_ERROR);
         }
+    }
+
+    private void start(String folderPath) {
+        loadStopWords();
+        readFiles(folderPath);
+    }
+
+
+    private void loadStopWords() {
+        try {
+            Path swPath = Paths.get(Constants.STOP_WORDS_PATH);
+             Constants.STOP_WORDS = Files.lines(swPath).collect(Collectors.toSet());
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

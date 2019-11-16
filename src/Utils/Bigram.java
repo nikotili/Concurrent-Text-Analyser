@@ -1,7 +1,5 @@
 package Utils;
 
-import Utils.Sequence;
-
 public class Bigram extends Sequence {
     public static final int BIGRAM_LENGTH = 2;
 

@@ -1,7 +1,12 @@
 package Utils;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public final class Constants {
     public static final String TXT_SUFFIX = ".txt";
+    public static final String STOP_WORDS_PATH = "stopwords.txt";
+    public static Set<String> STOP_WORDS = new HashSet<>();
     public static final String ERROR_READING_FILES = "Error while reading";
     public static final String NO_PATH_ERROR = "Please specify folder path";
     public static final String EMPTY_STRING = "";
