@@ -1,4 +1,4 @@
-package Utils;
+package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
 public class Unigram extends Sequence {
     public static final int UNIGRAM_LENGTH = 1;

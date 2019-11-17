@@ -1,5 +1,8 @@
-import Utils.Constants;
-import Utils.FileConsumer;
+package al.unyt.edu.advjava.fall2019.assign01;
+
+import al.unyt.edu.advjava.fall2019.assign01.Utils.Constants;
+import al.unyt.edu.advjava.fall2019.assign01.Utils.Controller;
+import al.unyt.edu.advjava.fall2019.assign01.Utils.FileConsumer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,14 +12,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public class Application {
+public class TextStatistics {
+    private static Controller controller = Controller.getInstance();
     private static final FileConsumer<Path> fileConsumer = new FileConsumer<>();
-    private Application() {}
+
+    private TextStatistics() {}
 
     public static void main(String[] args) {
         try {
 //            String folderPath = args[0];
-            Application application = new Application();
+            TextStatistics application = new TextStatistics();
 
             String folderPath = "C:\\Users\\User\\Desktop\\test";
             application.start(folderPath);
@@ -27,6 +32,7 @@ public class Application {
     }
 
     private void start(String folderPath) {
+        controller.start();
         loadStopWords();
         readFiles(folderPath);
     }
@@ -48,18 +54,25 @@ public class Application {
         try {
             Path path = Paths.get(folderPathS);
             if (!Files.isDirectory(path)) {
-                throw new IOException();
+                throw new IOException(Constants.NOT_A_DIRECTORY_ERROR_MESSAGE);
             }
 
-            getTxtFilePath(path).forEach(fileConsumer);
+            long txtFilesCount = getTxtFiles(path).count();
+
+            if (txtFilesCount == 0)
+                throw new IOException(Constants.EMPTY_DIRECTORY_ERROR_MESSAGE);
+
+            fileConsumer.setTotalFilesCount(txtFilesCount);
+            getTxtFiles(path).forEach(fileConsumer);
 
         }
         catch (IOException e) {
-            System.out.println(Constants.ERROR_READING_FILES);
+            System.out.println(e.getMessage());
+            System.exit(0);
         }
     }
     
-    private Stream<Path> getTxtFilePath(Path folderPath) throws IOException {
+    private Stream<Path> getTxtFiles(Path folderPath) throws IOException {
         return Files
                 .walk(folderPath)
                 .filter(file -> file.getFileName().toString().endsWith(Constants.TXT_SUFFIX));

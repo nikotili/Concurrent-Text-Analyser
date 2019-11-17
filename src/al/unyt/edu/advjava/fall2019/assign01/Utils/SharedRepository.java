@@ -1,4 +1,4 @@
-package Utils;
+package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
 import java.util.List;
 import java.util.Map;
@@ -10,13 +10,17 @@ import java.util.stream.Stream;
 
 public class SharedRepository {
 
-    private static SharedRepository sharedRepository = new SharedRepository();
+    private static SharedRepository sharedRepository;
     private Stream<Unigram> unigramStream;
     private Stream<Bigram> bigramStream;
     private ConcurrentHashMap<Unigram, Long> unigramMap;
     private ConcurrentHashMap<Bigram, Long> bigramMap;
     private ConcurrentHashMap<Word, Long> wordMap;
     private ConcurrentHashMap<String, AtomicLong> fileWordCountMap;
+
+    static {
+        sharedRepository = new SharedRepository();
+    }
 
     private SharedRepository() {
         unigramMap = new ConcurrentHashMap<>();

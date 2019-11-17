@@ -1,4 +1,4 @@
-package Utils;
+package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -16,13 +15,13 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
     private static final Pattern PATTERN = Pattern.compile(Constants.WHITE_SPACES_REGEX);
 
     private static final ExecutorService THREAD_POOL = Executors.newFixedThreadPool(Constants.NUMBER_OF_THREADS);
-    private static SharedRepository sharedRepository;
-    private static AtomicInteger numOfProcessedFiles;
+    private static SharedRepository sharedRepository = SharedRepository.getInstance();
+    private static AtomicLong processedFilesCount;
+    private static AtomicLong totalFilesCount;
 
-    public FileConsumer() {
-        THREAD_POOL.execute(new DataDisplayer());
-        sharedRepository = SharedRepository.getInstance();
-        numOfProcessedFiles = new AtomicInteger(0);
+    static {
+        totalFilesCount = new AtomicLong(0L);
+        processedFilesCount = new AtomicLong(0L);
     }
 
     @Override
@@ -57,12 +56,13 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
                 Files.lines(path)
                         .flatMap(PATTERN::splitAsStream)
                         .map(s -> s.replaceAll(Constants.SPECIAL_CHARS_REGEX, Constants.EMPTY_STRING))
+                        .map(String::toLowerCase)
                         .filter(s -> !isStopWord(s))
                         .map(Word::new)
                         .forEach(word -> processWord(numOfWordsInCurrentFile, word));
 
             updateFileWordCountMap(path, numOfWordsInCurrentFile);
-            numOfProcessedFiles.getAndIncrement();
+            processedFilesCount.getAndIncrement();
         }
 
         catch (IOException e) {
@@ -94,7 +94,15 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
     }
 
 
-    public static int getNumOfProcessedFiles() {
-        return numOfProcessedFiles.get();
+    public static long getProcessedFilesCount() {
+        return processedFilesCount.get();
+    }
+
+    public static long getTotalFilesCount() {
+        return totalFilesCount.get();
+    }
+
+    public void setTotalFilesCount(long totalFilesCount) {
+        FileConsumer.totalFilesCount = new AtomicLong(totalFilesCount);
     }
 }

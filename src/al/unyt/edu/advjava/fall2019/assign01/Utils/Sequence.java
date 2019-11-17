@@ -1,11 +1,11 @@
-package Utils;
+package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
 public abstract class Sequence implements Comparable {
     private String value;
     abstract protected void validate(String value) throws ClassCastException;
 
     protected void setValue(String value) {
-        this.value = value.toLowerCase();
+        this.value = value.replaceAll("_", "");
     }
 
     @Override
