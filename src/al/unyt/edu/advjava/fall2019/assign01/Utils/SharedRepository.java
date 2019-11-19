@@ -6,17 +6,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongToDoubleFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SharedRepository {
 
     private static SharedRepository sharedRepository;
-    private Stream<Unigram> unigramStream;
-    private Stream<Bigram> bigramStream;
-    private ConcurrentHashMap<Unigram, Long> unigramMap;
-    private ConcurrentHashMap<Bigram, Long> bigramMap;
-    private ConcurrentHashMap<Word, Long> wordMap;
-    private ConcurrentHashMap<String, AtomicLong> fileWordCountMap;
+    private Map<Unigram, Long> unigramMap;
+    private Map<Bigram, Long> bigramMap;
+    private Map<Word, Long> wordMap;
+    private Map<String, AtomicLong> fileWordCountMap;
 
     static {
         sharedRepository = new SharedRepository();
@@ -50,7 +47,7 @@ public class SharedRepository {
         System.out.println(sharedRepository.computeAndGetSequenceEntropy(sharedRepository.wordMap));
     }
 
-    public ConcurrentHashMap<String, AtomicLong> getFileWordCountMap() {
+    public Map<String, AtomicLong> getFileWordCountMap() {
         return fileWordCountMap;
     }
 
@@ -64,12 +61,14 @@ public class SharedRepository {
 
         LongToDoubleFunction squaredDifferenceFromMean = value -> Math.pow(value - mean, 2);
 
+        long filesCount = FileConsumer.getTotalFilesCount();
+
         double variance =
                 fileWordCountMap.values()
                         .stream()
                         .mapToLong(AtomicLong::longValue)
                         .mapToDouble(squaredDifferenceFromMean)
-                        .sum();
+                        .sum() / filesCount;
 
         return Math.sqrt(variance);
     }
@@ -83,7 +82,7 @@ public class SharedRepository {
     }
 
 
-    private <T extends Sequence> double computeAndGetSequenceEntropy(ConcurrentHashMap<T, Long> map) {
+    private <T extends Sequence> double computeAndGetSequenceEntropy(Map<T, Long> map) {
         final long totalSequences = getCurrentTotalSequenceCount(map);
         return -1 * map
                 .values()
@@ -100,7 +99,7 @@ public class SharedRepository {
         return Math.log(value) / Math.log(2);
     }
 
-    private <T extends Sequence> void putInMap(T sequence, ConcurrentHashMap<T, Long> map) {
+    private <T extends Sequence> void putInMap(T sequence, Map<T, Long> map) {
         Long oldNumOfOccurrences = map.getOrDefault(sequence, 0L);
 
         if (oldNumOfOccurrences.equals(0L))
@@ -137,11 +136,11 @@ public class SharedRepository {
         return getCurrentTotalSequenceCount(wordMap);
     }
 
-    private  <T extends Sequence> long getCurrentTotalSequenceCount(ConcurrentHashMap<T, Long> map) {
+    private  <T extends Sequence> long getCurrentTotalSequenceCount(Map<T, Long> map) {
         return map.values().stream().reduce(0L, Long::sum);
     }
 
-    private <T extends Sequence> List<Map.Entry> getSequencesToDisplay(ConcurrentHashMap<T, Long> map) {
+    private <T extends Sequence> List<Map.Entry> getSequencesToDisplay(Map<T, Long> map) {
         return map.entrySet()
                 .stream()
                 .sorted(new MapEntryComparator().reversed())
@@ -149,7 +148,7 @@ public class SharedRepository {
                 .collect(Collectors.toList());
     }
 
-    private <T extends Sequence> void incrementNumOfOccurrencesByOne(T sequence, Long oldNumOfOccurrences, ConcurrentHashMap<T, Long> map) {
+    private <T extends Sequence> void incrementNumOfOccurrencesByOne(T sequence, Long oldNumOfOccurrences, Map<T, Long> map) {
         map.replace(sequence, oldNumOfOccurrences, oldNumOfOccurrences + 1);
     }
 }

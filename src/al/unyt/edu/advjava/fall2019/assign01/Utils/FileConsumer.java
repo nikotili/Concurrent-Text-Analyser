@@ -32,7 +32,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
     public static void main(String[] args) {
         ArrayList<String> list = new ArrayList<>();
-        list.add("s1 fas da=fasd as asd as fas");
+        list.add("s1_fas da=fasd as asd as fas");
         list.add("s2=fas sadg ewawsd  gfads asd fasd a g we as");
         list.add("s3f sdsdfsdsdfs$@#@$%@hgjtwea ss  rd ");
         list.add("s4!@#$%^&*(*&^%$#@Wdfv");
