@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongToDoubleFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SharedRepository {
 
@@ -144,9 +143,9 @@ public class SharedRepository {
     }
 
     private <T extends Sequence> List<Map.Entry<T, AtomicLong>> getSequencesToDisplay(Map<T, AtomicLong> map) {
-        Stream<Map.Entry<T, AtomicLong>> s = map.entrySet()
-                .stream();
-        return s
+        return map.entrySet()
+                .stream()
+                .parallel()
                 .sorted(new MapEntryComparator().reversed())
                 .limit(Constants.ELEMENTS_TO_DISPLAY)
                 .collect(Collectors.toList());
