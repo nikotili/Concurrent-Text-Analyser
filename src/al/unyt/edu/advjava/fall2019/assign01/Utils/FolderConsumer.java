@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-public class FileConsumer<P extends Path> implements Consumer<P> {
+public class FolderConsumer<P extends Path> implements Consumer<P> {
 
     private static final Pattern PATTERN = Pattern.compile(Constants.WHITE_SPACES_REGEX);
 
@@ -57,7 +57,6 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
                         .flatMap(PATTERN::splitAsStream)
                         .map(s -> s.replaceAll(Constants.SPECIAL_CHARS_REGEX, Constants.EMPTY_STRING))
                         .map(String::toLowerCase)
-                        .filter(s -> !isStopWord(s))
                         .map(Word::new)
                         .forEach(word -> processWord(numOfWordsInCurrentFile, word));
 
@@ -82,15 +81,16 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
     }
 
 
-    private boolean isStopWord(String s) {
-        return Constants.STOP_WORDS.contains(s)
-                || s.trim().equals("");
+    private boolean isStopWord(Word word) {
+        return Constants.STOP_WORDS.contains(word.toString())
+                || word.toString().trim().equals("");
     }
 
     private void extractSequences(Word word) {
         word.getUnigramStream().forEach(sharedRepository::putInUnigramMap);
         word.getBigramStream().forEach(sharedRepository::putInBigramMap);
-        sharedRepository.putInWordMap(word);
+        if (!isStopWord(word))
+            sharedRepository.putInWordMap(word);
     }
 
 
@@ -103,6 +103,6 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
     }
 
     public void setTotalFilesCount(long totalFilesCount) {
-        FileConsumer.totalFilesCount = new AtomicLong(totalFilesCount);
+        FolderConsumer.totalFilesCount = new AtomicLong(totalFilesCount);
     }
 }

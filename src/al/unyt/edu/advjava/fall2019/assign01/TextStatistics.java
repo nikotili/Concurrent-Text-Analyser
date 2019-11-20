@@ -2,7 +2,7 @@ package al.unyt.edu.advjava.fall2019.assign01;
 
 import al.unyt.edu.advjava.fall2019.assign01.Utils.Constants;
 import al.unyt.edu.advjava.fall2019.assign01.Utils.Controller;
-import al.unyt.edu.advjava.fall2019.assign01.Utils.FileConsumer;
+import al.unyt.edu.advjava.fall2019.assign01.Utils.FolderConsumer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 public class TextStatistics {
     private static Controller controller = Controller.getInstance();
-    private static final FileConsumer<Path> fileConsumer = new FileConsumer<>();
+    private static final FolderConsumer<Path> FOLDER_CONSUMER = new FolderConsumer<>();
 
     private TextStatistics() {}
 
@@ -62,8 +62,8 @@ public class TextStatistics {
             if (txtFilesCount == 0)
                 throw new IOException(Constants.EMPTY_DIRECTORY_ERROR_MESSAGE);
 
-            fileConsumer.setTotalFilesCount(txtFilesCount);
-            getTxtFiles(path).forEach(fileConsumer);
+            FOLDER_CONSUMER.setTotalFilesCount(txtFilesCount);
+            getTxtFiles(path).forEach(FOLDER_CONSUMER);
 
         }
         catch (IOException e) {
