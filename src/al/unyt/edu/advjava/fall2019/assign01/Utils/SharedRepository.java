@@ -144,8 +144,7 @@ public class SharedRepository {
 
     private <T extends Sequence> List<Map.Entry<T, AtomicLong>> getSequencesToDisplay(Map<T, AtomicLong> map) {
         return map.entrySet()
-                .stream()
-                .parallel()
+                .parallelStream()
                 .sorted(new MapEntryComparator().reversed())
                 .limit(Constants.ELEMENTS_TO_DISPLAY)
                 .collect(Collectors.toList());
