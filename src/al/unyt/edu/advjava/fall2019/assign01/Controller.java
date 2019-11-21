@@ -1,4 +1,8 @@
-package al.unyt.edu.advjava.fall2019.assign01.Utils;
+package al.unyt.edu.advjava.fall2019.assign01;
+
+import al.unyt.edu.advjava.fall2019.assign01.Utils.Constants;
+import al.unyt.edu.advjava.fall2019.assign01.Utils.FileConsumer;
+import al.unyt.edu.advjava.fall2019.assign01.Utils.SharedRepository;
 
 import java.time.Instant;
 
@@ -19,6 +23,7 @@ public class Controller extends Thread {
 
     private Controller() {
         START_TIME = Instant.now();
+        setPriority(Thread.MAX_PRIORITY);
     }
 
 
@@ -38,9 +43,9 @@ public class Controller extends Thread {
                     printWordAnalysis();
                 }
 
-                printUnigrams();
-                printBigrams();
-                printWords();
+//                printUnigrams();
+//                printBigrams();
+//                printWords();
                 printUnigramEntropy();
                 printBigramEntropy();
 

@@ -1,7 +1,6 @@
 package al.unyt.edu.advjava.fall2019.assign01;
 
 import al.unyt.edu.advjava.fall2019.assign01.Utils.Constants;
-import al.unyt.edu.advjava.fall2019.assign01.Utils.Controller;
 import al.unyt.edu.advjava.fall2019.assign01.Utils.FileConsumer;
 
 import java.io.IOException;
@@ -20,11 +19,8 @@ public class TextStatistics {
 
     public static void main(String[] args) {
         try {
-//            String folderPath = args[0];
             TextStatistics application = new TextStatistics();
-
-            String folderPath = "C:\\Users\\User\\Desktop\\test";
-            application.start(folderPath);
+            application.start(args[0]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             System.out.println(Constants.NO_PATH_ERROR);

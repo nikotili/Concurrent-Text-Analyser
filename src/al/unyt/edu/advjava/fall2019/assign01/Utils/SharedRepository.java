@@ -13,10 +13,10 @@ public class SharedRepository {
     private static SharedRepository sharedRepository;
     private Stream<Unigram> unigramStream;
     private Stream<Bigram> bigramStream;
-    private ConcurrentHashMap<Unigram, Long> unigramMap;
-    private ConcurrentHashMap<Bigram, Long> bigramMap;
-    private ConcurrentHashMap<Word, Long> wordMap;
-    private ConcurrentHashMap<String, AtomicLong> fileWordCountMap;
+    private Map<Unigram, AtomicLong> unigramMap;
+    private Map<Bigram, AtomicLong> bigramMap;
+    private Map<Word, AtomicLong> wordMap;
+    private Map<String, AtomicLong> fileWordCountMap;
 
     static {
         sharedRepository = new SharedRepository();
@@ -35,22 +35,22 @@ public class SharedRepository {
 
     public static void main(String[] args) {
         SharedRepository sharedRepository = getInstance();
-
-        sharedRepository.wordMap.put(new Word("w1"), 23L);
-        sharedRepository.wordMap.put(new Word("w2"), 331L);
-        sharedRepository.wordMap.put(new Word("w3"), 32L);
-        sharedRepository.wordMap.put(new Word("w4"), 31L);
-        sharedRepository.wordMap.put(new Word("w5"), 86L);
-        sharedRepository.wordMap.put(new Word("w6"), 35L);
-        sharedRepository.wordMap.put(new Word("w7"), 3L);
-        sharedRepository.wordMap.put(new Word("w8"), 3L);
-        sharedRepository.wordMap.put(new Word("w9"), 3L);
-        sharedRepository.wordMap.put(new Word("w0"), 3L);
-
-        System.out.println(sharedRepository.computeAndGetSequenceEntropy(sharedRepository.wordMap));
+//
+//        sharedRepository.wordMap.put(new Word("w1"), 23L);
+//        sharedRepository.wordMap.put(new Word("w2"), 331L);
+//        sharedRepository.wordMap.put(new Word("w3"), 32L);
+//        sharedRepository.wordMap.put(new Word("w4"), 31L);
+//        sharedRepository.wordMap.put(new Word("w5"), 86L);
+//        sharedRepository.wordMap.put(new Word("w6"), 35L);
+//        sharedRepository.wordMap.put(new Word("w7"), 3L);
+//        sharedRepository.wordMap.put(new Word("w8"), 3L);
+//        sharedRepository.wordMap.put(new Word("w9"), 3L);
+//        sharedRepository.wordMap.put(new Word("w0"), 3L);
+//
+//        System.out.println(sharedRepository.computeAndGetSequenceEntropy(sharedRepository.wordMap));
     }
 
-    public ConcurrentHashMap<String, AtomicLong> getFileWordCountMap() {
+    public Map<String, AtomicLong> getFileWordCountMap() {
         return fileWordCountMap;
     }
 
@@ -83,7 +83,7 @@ public class SharedRepository {
     }
 
 
-    private <T extends Sequence> double computeAndGetSequenceEntropy(ConcurrentHashMap<T, Long> map) {
+    private <T extends Sequence> double computeAndGetSequenceEntropy(Map<T, AtomicLong> map) {
         final long totalSequences = getCurrentTotalSequenceCount(map);
         return -1 * map
                 .values()
@@ -92,7 +92,9 @@ public class SharedRepository {
                 .reduce(0D, Double::sum);
     }
 
-    private static double pTimesLogP(Long count, long totalCount) {
+    private static double pTimesLogP(AtomicLong count, long totalCount) {
+        if (count.doubleValue() == 0D)
+            return 0D;
         return count.doubleValue() / totalCount * log2(count.doubleValue() / totalCount);
     }
 
@@ -100,13 +102,13 @@ public class SharedRepository {
         return Math.log(value) / Math.log(2);
     }
 
-    private <T extends Sequence> void putInMap(T sequence, ConcurrentHashMap<T, Long> map) {
-        Long oldNumOfOccurrences = map.getOrDefault(sequence, 0L);
+    private <T extends Sequence> void putInMap(T sequence, Map<T, AtomicLong> map) {
 
-        if (oldNumOfOccurrences.equals(0L))
-            map.put(sequence, 1L);
+        if (map.containsKey(sequence))
+            map.get(sequence).incrementAndGet();
+
         else
-            incrementNumOfOccurrencesByOne(sequence, oldNumOfOccurrences, map);
+            map.put(sequence, new AtomicLong(0));
     }
 
     public synchronized void putInUnigramMap(Unigram unigram) {
@@ -121,15 +123,15 @@ public class SharedRepository {
         putInMap(word, wordMap);
     }
 
-    public List<Map.Entry> getUnigramsToDisplay() {
+    public List getUnigramsToDisplay() {
         return getSequencesToDisplay(unigramMap);
     }
 
-    public List<Map.Entry> getBigramsToDisplay() {
+    public List getBigramsToDisplay() {
         return getSequencesToDisplay(bigramMap);
     }
 
-    public List<Map.Entry> getWordsToDisplay() {
+    public List getWordsToDisplay() {
         return getSequencesToDisplay(wordMap);
     }
 
@@ -137,19 +139,20 @@ public class SharedRepository {
         return getCurrentTotalSequenceCount(wordMap);
     }
 
-    private  <T extends Sequence> long getCurrentTotalSequenceCount(ConcurrentHashMap<T, Long> map) {
-        return map.values().stream().reduce(0L, Long::sum);
+    private  <T extends Sequence> long getCurrentTotalSequenceCount(Map<T, AtomicLong> map) {
+        return map.values().stream().mapToLong(AtomicLong::longValue).reduce(0L, Long::sum);
     }
 
-    private <T extends Sequence> List<Map.Entry> getSequencesToDisplay(ConcurrentHashMap<T, Long> map) {
-        return map.entrySet()
-                .stream()
-                .sorted(new MapEntryComparator().reversed())
-                .limit(Constants.ELEMENTS_TO_DISPLAY)
-                .collect(Collectors.toList());
-    }
-
-    private <T extends Sequence> void incrementNumOfOccurrencesByOne(T sequence, Long oldNumOfOccurrences, ConcurrentHashMap<T, Long> map) {
-        map.replace(sequence, oldNumOfOccurrences, oldNumOfOccurrences + 1);
+    private <T extends Sequence> List getSequencesToDisplay(Map<T, AtomicLong> map) {
+        try {
+            return map.entrySet()
+                    .parallelStream()
+                    .sorted(new MapEntryComparator().reversed())
+                    .limit(Constants.ELEMENTS_TO_DISPLAY)
+                    .collect(Collectors.toList());
+        }
+        catch (IllegalArgumentException e) {
+            return getSequencesToDisplay(map);
+        }
     }
 }
