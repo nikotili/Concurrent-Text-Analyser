@@ -77,11 +77,11 @@ public class Controller extends Thread {
     }
 
     private void printProcessingFilesCount() {
-        System.out.println(FileConsumer.getTotalFilesCount() - FileConsumer.getProcessedFilesCount() + " files processing");
+        System.out.println(FolderConsumer.getTotalFilesCount() - FolderConsumer.getProcessedFilesCount() + " files processing");
     }
 
     private void printProcessedFilesCount() {
-        System.out.println(FileConsumer.getProcessedFilesCount() + " files processed");
+        System.out.println(FolderConsumer.getProcessedFilesCount() + " files processed");
     }
 
     private void printWordAnalysis() {
@@ -110,6 +110,6 @@ public class Controller extends Thread {
     }
 
     private boolean finished() {
-        return FileConsumer.getProcessedFilesCount() == FileConsumer.getTotalFilesCount();
+        return FolderConsumer.getProcessedFilesCount() == FolderConsumer.getTotalFilesCount();
     }
 }
