@@ -1,28 +1,53 @@
 package al.unyt.edu.advjava.fall2019.assign01;
 
-import al.unyt.edu.advjava.fall2019.assign01.Utils.Constants;
 import al.unyt.edu.advjava.fall2019.assign01.Utils.FileConsumer;
 import al.unyt.edu.advjava.fall2019.assign01.Utils.SharedRepository;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
-public class Controller extends Thread {
+public final class Controller extends Thread {
 
-    private static SharedRepository sharedRepository;
+    public static final String TXT_SUFFIX;
+    public static final String STOP_WORDS_PATH;
+    public static final String NOT_A_DIRECTORY_ERROR_MESSAGE;
+    public static final String EMPTY_DIRECTORY_ERROR_MESSAGE;
+    public static final String NO_PATH_ERROR;
+    public static final String EMPTY_STRING;
+    public static final String SPECIAL_CHARS_REGEX;
+    public static final String WHITE_SPACES_REGEX;
+    public static final long CONTROLLER_SLEEP_INTERVAL;
+    public static Set<String> STOP_WORDS;
+    private static final SharedRepository SHARED_REPOSITORY;
     private static Controller controller;
-    private final Instant START_TIME;
+    private static final Instant START_TIME;
 
     public static Controller getInstance() {
         return controller;
     }
 
     static {
+        START_TIME = Instant.now();
+        TXT_SUFFIX = ".txt";
+        STOP_WORDS_PATH = "stopwords.txt";
+        NOT_A_DIRECTORY_ERROR_MESSAGE = "Specified path is not a directory";
+        EMPTY_DIRECTORY_ERROR_MESSAGE = "No .txt files in specified path";
+        NO_PATH_ERROR = "Please specify folder path";
+        EMPTY_STRING = "";
+        SPECIAL_CHARS_REGEX = "\\W";
+        WHITE_SPACES_REGEX = "\\s+";
+        CONTROLLER_SLEEP_INTERVAL = 500;
+        STOP_WORDS = new HashSet<>();
         controller = new Controller();
-        sharedRepository = SharedRepository.getInstance();
+        SHARED_REPOSITORY = SharedRepository.getInstance();
     }
 
     private Controller() {
-        START_TIME = Instant.now();
         setPriority(Thread.MAX_PRIORITY);
     }
 
@@ -31,7 +56,7 @@ public class Controller extends Thread {
     public void run() {
         try {
             while (true) {
-                Thread.sleep(Constants.CONTROLLER_SLEEP_INTERVAL);
+                Thread.sleep(CONTROLLER_SLEEP_INTERVAL);
                 printSeparator();
                 printElapsedTime();
                 if (!finished()) {
@@ -43,14 +68,19 @@ public class Controller extends Thread {
                     printWordAnalysis();
                 }
 
-//                printUnigrams();
-//                printBigrams();
-//                printWords();
+                printUnigrams();
+                printBigrams();
+                printWords();
                 printUnigramEntropy();
                 printBigramEntropy();
 
                 printSeparator();
                 if (finished()) {
+                    try {
+                        String s = String.format("Threads: %d, time: %d, files: %d\n", FileConsumer.NUMBER_OF_THREADS, getElapsedTime(), FileConsumer.getTotalFilesCount());
+                        Files.write(Paths.get("result.txt"), s.getBytes(), StandardOpenOption.APPEND);
+                    }
+                    catch (IOException e) {}
                     System.exit(0);
                 }
             }
@@ -63,53 +93,57 @@ public class Controller extends Thread {
         }
     }
 
-    private void printElapsedTime() {
+    private static void printElapsedTime() {
         System.out.printf("%s %d ms\n", ( finished() ? "final execution time:" : "elapsed:"),getElapsedTime());
     }
 
-    private long getElapsedTime() {
+    private static long getElapsedTime() {
         return Instant.now().toEpochMilli() - START_TIME.toEpochMilli();
     }
 
-    private void printSeparator() {
+    private static void printSeparator() {
         System.out.println("================================================================================");
         System.out.println("================================================================================");
     }
 
-    private void printProcessingFilesCount() {
-        System.out.println(FolderConsumer.getTotalFilesCount() - FolderConsumer.getProcessedFilesCount() + " files processing");
+    private static void printProcessingFilesCount() {
+        System.out.println(FileConsumer.getTotalFilesCount() - FileConsumer.getProcessedFilesCount() + " files processing");
     }
 
-    private void printProcessedFilesCount() {
-        System.out.println(FolderConsumer.getProcessedFilesCount() + " files processed");
+    private static void printProcessedFilesCount() {
+        System.out.println(FileConsumer.getProcessedFilesCount() + " files processed");
     }
 
-    private void printWordAnalysis() {
-        System.out.println("Total words: " + sharedRepository.getCurrentTotalWordCount());
-        System.out.printf("Std. Dev: %.4f\n", sharedRepository.computeAndGetStandardDeviationOnWordCount());
+    private static void printWordAnalysis() {
+        System.out.println("Total words: " + SHARED_REPOSITORY.getCurrentTotalWordCount());
+        System.out.printf("Std. Dev: %.4f\n", SHARED_REPOSITORY.computeAndGetStandardDeviationOnWordCount());
     }
 
-    private void printUnigramEntropy() {
-        System.out.printf("unigram entropy: %.4f\n", sharedRepository.computeAndGetUnigramEntropy());
+    private static void printUnigramEntropy() {
+        System.out.printf("unigram entropy: %.4f\n", SHARED_REPOSITORY.computeAndGetUnigramEntropy());
     }
 
-    private void printBigramEntropy() {
-        System.out.printf("bigram entropy: %.4f\n", sharedRepository.computeAndGetBigramEntropy());
+    private static void printBigramEntropy() {
+        System.out.printf("bigram entropy: %.4f\n", SHARED_REPOSITORY.computeAndGetBigramEntropy());
     }
 
-    private void printUnigrams() {
-        System.out.println("letters: " +  sharedRepository.getUnigramsToDisplay());
+    private static void printUnigrams() {
+        System.out.println("letters: " +  SHARED_REPOSITORY.getUnigramsToDisplay());
     }
 
-    private void printBigrams() {
-        System.out.println("pairs: " + sharedRepository.getBigramsToDisplay());
+    private static void printBigrams() {
+        System.out.println("pairs: " + SHARED_REPOSITORY.getBigramsToDisplay());
     }
 
-    private void printWords() {
-        System.out.println("words: " + sharedRepository.getWordsToDisplay());
+    private static void printWords() {
+        System.out.println("words: " + SHARED_REPOSITORY.getWordsToDisplay());
     }
 
-    private boolean finished() {
-        return FolderConsumer.getProcessedFilesCount() == FolderConsumer.getTotalFilesCount();
+    public static void displayErrorMessage(String message) {
+        System.err.println(message);
+    }
+
+    private static boolean finished() {
+        return FileConsumer.getProcessedFilesCount() == FileConsumer.getTotalFilesCount();
     }
 }

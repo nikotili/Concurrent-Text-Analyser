@@ -1,24 +1,23 @@
 package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongToDoubleFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SharedRepository {
-
+    private static final int ELEMENTS_TO_DISPLAY;
     private static SharedRepository sharedRepository;
-    private Stream<Unigram> unigramStream;
-    private Stream<Bigram> bigramStream;
     private Map<Unigram, AtomicLong> unigramMap;
     private Map<Bigram, AtomicLong> bigramMap;
     private Map<Word, AtomicLong> wordMap;
     private Map<String, AtomicLong> fileWordCountMap;
 
     static {
+        ELEMENTS_TO_DISPLAY  = 5;
         sharedRepository = new SharedRepository();
     }
 
@@ -33,22 +32,6 @@ public class SharedRepository {
         return sharedRepository;
     }
 
-    public static void main(String[] args) {
-        SharedRepository sharedRepository = getInstance();
-//
-//        sharedRepository.wordMap.put(new Word("w1"), 23L);
-//        sharedRepository.wordMap.put(new Word("w2"), 331L);
-//        sharedRepository.wordMap.put(new Word("w3"), 32L);
-//        sharedRepository.wordMap.put(new Word("w4"), 31L);
-//        sharedRepository.wordMap.put(new Word("w5"), 86L);
-//        sharedRepository.wordMap.put(new Word("w6"), 35L);
-//        sharedRepository.wordMap.put(new Word("w7"), 3L);
-//        sharedRepository.wordMap.put(new Word("w8"), 3L);
-//        sharedRepository.wordMap.put(new Word("w9"), 3L);
-//        sharedRepository.wordMap.put(new Word("w0"), 3L);
-//
-//        System.out.println(sharedRepository.computeAndGetSequenceEntropy(sharedRepository.wordMap));
-    }
 
     public Map<String, AtomicLong> getFileWordCountMap() {
         return fileWordCountMap;
@@ -69,7 +52,7 @@ public class SharedRepository {
                         .stream()
                         .mapToLong(AtomicLong::longValue)
                         .mapToDouble(squaredDifferenceFromMean)
-                        .sum();
+                        .sum() / fileWordCountMap.size();
 
         return Math.sqrt(variance);
     }
@@ -87,14 +70,12 @@ public class SharedRepository {
         final long totalSequences = getCurrentTotalSequenceCount(map);
         return -1 * map
                 .values()
-                .stream()
+                .parallelStream()
                 .map(value -> pTimesLogP(value, totalSequences))
                 .reduce(0D, Double::sum);
     }
 
     private static double pTimesLogP(AtomicLong count, long totalCount) {
-        if (count.doubleValue() == 0D)
-            return 0D;
         return count.doubleValue() / totalCount * log2(count.doubleValue() / totalCount);
     }
 
@@ -108,7 +89,7 @@ public class SharedRepository {
             map.get(sequence).incrementAndGet();
 
         else
-            map.put(sequence, new AtomicLong(0));
+            map.put(sequence, new AtomicLong(1));
     }
 
     public synchronized void putInUnigramMap(Unigram unigram) {
@@ -148,7 +129,7 @@ public class SharedRepository {
             return map.entrySet()
                     .parallelStream()
                     .sorted(new MapEntryComparator().reversed())
-                    .limit(Constants.ELEMENTS_TO_DISPLAY)
+                    .limit(ELEMENTS_TO_DISPLAY)
                     .collect(Collectors.toList());
         }
         catch (IllegalArgumentException e) {

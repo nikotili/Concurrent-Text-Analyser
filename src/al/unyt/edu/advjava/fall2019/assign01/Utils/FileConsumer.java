@@ -1,5 +1,7 @@
 package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
+import al.unyt.edu.advjava.fall2019.assign01.Controller;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,14 +14,18 @@ import java.util.regex.Pattern;
 
 public class FileConsumer<P extends Path> implements Consumer<P> {
 
-    private static final Pattern PATTERN = Pattern.compile(Constants.WHITE_SPACES_REGEX);
-
-    private static final ExecutorService THREAD_POOL = Executors.newFixedThreadPool(Constants.NUMBER_OF_THREADS);
-    private static SharedRepository sharedRepository = SharedRepository.getInstance();
+    private static final Pattern PATTERN;
+    public static final int NUMBER_OF_THREADS;
+    private static final ExecutorService THREAD_POOL;
+    private static final SharedRepository sharedRepository;
     private static AtomicLong processedFilesCount;
     private static AtomicLong totalFilesCount;
 
     static {
+        PATTERN = Pattern.compile(Controller.WHITE_SPACES_REGEX);
+        NUMBER_OF_THREADS = 50;
+        THREAD_POOL = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+        sharedRepository = SharedRepository.getInstance();
         totalFilesCount = new AtomicLong(0L);
         processedFilesCount = new AtomicLong(0L);
     }
@@ -45,17 +51,18 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
         list.stream()
                 .flatMap(PATTERN::splitAsStream)
-                .map(line -> line.replaceAll("\\W", Constants.EMPTY_STRING))
+                .map(line -> line.replaceAll("\\W", Controller.EMPTY_STRING))
                 .forEach(System.out::println);
     }
 
 
     private void loadFile(P path) {
+//        System.out.println(Thread.currentThread().getName());
         AtomicLong numOfWordsInCurrentFile = new AtomicLong(0L);
         try {
                 Files.lines(path)
                         .flatMap(PATTERN::splitAsStream)
-                        .map(s -> s.replaceAll(Constants.SPECIAL_CHARS_REGEX, Constants.EMPTY_STRING))
+                        .map(s -> s.replaceAll(Controller.SPECIAL_CHARS_REGEX, Controller.EMPTY_STRING))
                         .map(String::toLowerCase)
                         .map(Word::new)
                         .forEach(word -> processWord(numOfWordsInCurrentFile, word));
@@ -82,7 +89,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
 
     private boolean isStopWord(Word word) {
-        return Constants.STOP_WORDS.contains(word.toString())
+        return Controller.STOP_WORDS.contains(word.toString())
                 || word.toString().trim().equals("");
     }
 

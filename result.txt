@@ -1,0 +1,84 @@
+Threads: 7, time: 19479
+Threads: 1, time: 21948
+Threads: 2, time: 17301
+Threads: 3, time: 16902
+Threads: 4, time: 20073
+Threads: 5, time: 20058
+Threads: 6, time: 18464
+Threads: 7, time: 19043
+Threads: 8, time: 18995
+Threads: 9, time: 19104
+Threads: 10, time: 19824
+
+--plugged
+Threads: 11, time: 14231
+Threads: 11, time: 13700
+Threads: 12, time: 13794
+Threads: 3, time: 12591
+Threads: 5, time: 14216
+Threads: 7, time: 14215
+Threads: 90, time: 13725
+Threads: 90, time: 14309
+Threads: 72, time: 14263
+Threads: 70, time: 13747
+Threads: 60, time: 14763
+Threads: 60, time: 14325, files: 72 
+Threads: 60, time: 14231, files: 72 
+Threads: 6, time: 14215, files: 72 
+Threads: 6, time: 14685, files: 72 
+Threads: 6, time: 14715, files: 72 
+Threads: 60, time: 14778, files: 72 
+Threads: 60, time: 13668, files: 72 
+Threads: 50, time: 14199, files: 72 
+Threads: 50, time: 13732, files: 72 
+Threads: 3, time: 12059, files: 72 
+Threads: 3, time: 12637, files: 72 
+Threads: 3, time: 12107, files: 72 
+Threads: 3, time: 12138, files: 72 
+Threads: 3, time: 12060, files: 72 
+Threads: 3, time: 12075, files: 72 
+Threads: 50, time: 9295, files: 72 (not synced) 
+Threads: 50, time: 10169, files: 72 (not synced)
+Threads: 5, time: 9513, files: 72 (not synced) 
+Threads: 5, time: 9498, files: 72 (not synced) 
+Threads: 10, time: 9170, files: 72 (not synced) 
+Threads: 20, time: 9389, files: 72 (not synced) 
+
+--unplugged
+Threads: N/A, time: 14793, files: 72 (cached pool)(not synced)
+Threads: N/A, time: 12872, files: 72 (cached pool) (not synced)
+Threads: N/A, time: 14153, files: 72 (cached pool) (not synced)
+Threads: (N/A), time: 18246, files: 72 (cached pool) 
+Threads: 20, time: 17965, files: 72
+Threads: 50, time: 17980, files: 72
+    --parallel calc
+    Threads: 50, time: 19026, files: 72
+    Threads: 50, time: 17730, files: 72
+    Threads: 5, time: 18011, files: 72
+    Threads: 5, time: 18402, files: 72
+    Threads: 5, time: 18230, files: 72
+
+
+Threads: 5, time: 18511, files: 72
+Threads: 5, time: 18495, files: 72
+Threads: 5, time: 18027, files: 72
+
+--plugged
+Threads: 5, time: 13731, files: 72
+Threads: 5, time: 14231, files: 72
+Threads: 5, time: 2609, files: 2
+Threads: 1, time: 2609, files: 2
+--unplugged
+Threads: 1, time: 3655, files: 2
+Threads: 1, time: 3171, files: 2
+Threads: 1, time: 3639, files: 2
+--plugged
+Threads: 1, time: 3140, files: 2
+Threads: 1, time: 2656, files: 2
+Threads: 1, time: 3124, files: 2
+Threads: 10, time: 2640, files: 2
+Threads: 10, time: 3702, files: 2
+Threads: 10, time: 3172, files: 2
+Threads: 10, time: 3171, files: 2
+Threads: 10, time: 2625, files: 2
+Threads: 50, time: 2625, files: 2
