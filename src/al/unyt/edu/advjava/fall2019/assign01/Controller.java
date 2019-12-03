@@ -3,10 +3,6 @@ package al.unyt.edu.advjava.fall2019.assign01;
 import al.unyt.edu.advjava.fall2019.assign01.Utils.FileConsumer;
 import al.unyt.edu.advjava.fall2019.assign01.Utils.SharedRepository;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,9 +14,6 @@ public final class Controller extends Thread {
     public static final String NOT_A_DIRECTORY_ERROR_MESSAGE;
     public static final String EMPTY_DIRECTORY_ERROR_MESSAGE;
     public static final String NO_PATH_ERROR;
-    public static final String EMPTY_STRING;
-    public static final String SPECIAL_CHARS_REGEX;
-    public static final String WHITE_SPACES_REGEX;
     public static final long CONTROLLER_SLEEP_INTERVAL;
     public static Set<String> STOP_WORDS;
     private static final SharedRepository SHARED_REPOSITORY;
@@ -38,9 +31,6 @@ public final class Controller extends Thread {
         NOT_A_DIRECTORY_ERROR_MESSAGE = "Specified path is not a directory";
         EMPTY_DIRECTORY_ERROR_MESSAGE = "No .txt files in specified path";
         NO_PATH_ERROR = "Please specify folder path";
-        EMPTY_STRING = "";
-        SPECIAL_CHARS_REGEX = "\\W";
-        WHITE_SPACES_REGEX = "\\s+";
         CONTROLLER_SLEEP_INTERVAL = 500;
         STOP_WORDS = new HashSet<>();
         controller = new Controller();
@@ -76,11 +66,7 @@ public final class Controller extends Thread {
 
                 printSeparator();
                 if (finished()) {
-                    try {
-                        String s = String.format("Threads: %d, time: %d, files: %d\n", FileConsumer.NUMBER_OF_THREADS, getElapsedTime(), FileConsumer.getTotalFilesCount());
-                        Files.write(Paths.get("result.txt"), s.getBytes(), StandardOpenOption.APPEND);
-                    }
-                    catch (IOException e) {}
+
                     System.exit(0);
                 }
             }

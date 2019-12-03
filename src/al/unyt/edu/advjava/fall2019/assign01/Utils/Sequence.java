@@ -5,7 +5,7 @@ public abstract class Sequence implements Comparable {
     abstract protected void validate(String value) throws ClassCastException;
 
     protected void setValue(String value) {
-        this.value = value.replaceAll("_", "");
+        this.value = value;
     }
 
     @Override

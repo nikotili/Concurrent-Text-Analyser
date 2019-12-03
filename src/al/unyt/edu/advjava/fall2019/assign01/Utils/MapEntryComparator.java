@@ -9,6 +9,8 @@ public class MapEntryComparator implements Comparator<Map.Entry<? extends Sequen
 
     @Override
     public int compare(Map.Entry<? extends Sequence, AtomicLong> e1, Map.Entry<? extends Sequence, AtomicLong> e2) {
-        return e1.getValue().intValue() -  e2.getValue().intValue();
+        if (e1.getValue().longValue() - e2.getValue().longValue() == 0)
+            return 0;
+        return e1.getValue().longValue() -  e2.getValue().longValue() > 0 ? 1 : -1;
     }
 }
