@@ -39,7 +39,7 @@ public final class Controller extends Thread {
         EMPTY_DIRECTORY_ERROR_MESSAGE = "No .txt files in specified path";
         NO_PATH_ERROR = "Please specify folder path";
         EMPTY_STRING = "";
-        SPECIAL_CHARS_REGEX = "\\W";
+        SPECIAL_CHARS_REGEX = "[^a-zA-Z0-9]+";
         WHITE_SPACES_REGEX = "\\s+";
         CONTROLLER_SLEEP_INTERVAL = 500;
         STOP_WORDS = new HashSet<>();

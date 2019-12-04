@@ -3,6 +3,7 @@ package al.unyt.edu.advjava.fall2019.assign01.Utils;
 import al.unyt.edu.advjava.fall2019.assign01.Controller;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
     static {
         PATTERN = Pattern.compile(Controller.WHITE_SPACES_REGEX);
-        NUMBER_OF_THREADS = 50;
+        NUMBER_OF_THREADS = 5;
         THREAD_POOL = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
         sharedRepository = SharedRepository.getInstance();
         totalFilesCount = new AtomicLong(0L);
@@ -38,7 +39,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
     public static void main(String[] args) {
         ArrayList<String> list = new ArrayList<>();
-        list.add("s1 fas da=fasd as asd as fas");
+        list.add("s1 fas da_fasd as asd as fas");
         list.add("s2=fas sadg ewawsd  gfads asd fasd a g we as");
         list.add("s3f sdsdfsdsdfs$@#@$%@hgjtwea ss  rd ");
         list.add("s4!@#$%^&*(*&^%$#@Wdfv");
@@ -51,7 +52,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
         list.stream()
                 .flatMap(PATTERN::splitAsStream)
-                .map(line -> line.replaceAll("\\W", Controller.EMPTY_STRING))
+                .map(line -> line.replaceAll(Controller.SPECIAL_CHARS_REGEX, Controller.EMPTY_STRING))
                 .forEach(System.out::println);
     }
 
@@ -60,7 +61,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 //        System.out.println(Thread.currentThread().getName());
         AtomicLong numOfWordsInCurrentFile = new AtomicLong(0L);
         try {
-                Files.lines(path)
+                Files.lines(path, StandardCharsets.ISO_8859_1)
                         .flatMap(PATTERN::splitAsStream)
                         .map(s -> s.replaceAll(Controller.SPECIAL_CHARS_REGEX, Controller.EMPTY_STRING))
                         .map(String::toLowerCase)
@@ -89,8 +90,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
 
     private boolean isStopWord(Word word) {
-        return Controller.STOP_WORDS.contains(word.toString())
-                || word.toString().trim().equals("");
+        return Controller.STOP_WORDS.contains(word.toString());
     }
 
     private void extractSequences(Word word) {

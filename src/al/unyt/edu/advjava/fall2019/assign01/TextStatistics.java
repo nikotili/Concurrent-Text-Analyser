@@ -42,6 +42,7 @@ public class TextStatistics {
         try {
             Path swPath = Paths.get(Controller.STOP_WORDS_PATH);
              Controller.STOP_WORDS = Files.lines(swPath).collect(Collectors.toSet());
+             Controller.STOP_WORDS.add(Controller.EMPTY_STRING);
         }
         catch (IOException e) {
             e.printStackTrace();

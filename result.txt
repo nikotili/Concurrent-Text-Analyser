@@ -82,3 +82,11 @@ Threads: 10, time: 3172, files: 2
 Threads: 10, time: 3171, files: 2
 Threads: 10, time: 2625, files: 2
 Threads: 50, time: 2625, files: 2
+Threads: 50, time: 42506, files: 180
+Threads: 50, time: 41881, files: 180
+Threads: 50, time: 43521, files: 180
+Threads: 50, time: 41459, files: 180
+Threads: 50, time: 43552, files: 180
+Threads: 50, time: 45084, files: 180
+Threads: 5, time: 44990, files: 180
+Threads: 5, time: 43912, files: 180
