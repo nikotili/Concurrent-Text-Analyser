@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 public class Word extends Sequence {
 
     public Word(String value) {
-        validate(value);
+        setValue(value);
     }
     @Override
     protected void validate(String value) throws ClassCastException {

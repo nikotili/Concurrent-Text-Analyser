@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -37,26 +36,6 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
     }
 
 
-    public static void main(String[] args) {
-        ArrayList<String> list = new ArrayList<>();
-        list.add("s1 fas da_fasd as asd as fas");
-        list.add("s2=fas sadg ewawsd  gfads asd fasd a g we as");
-        list.add("s3f sdsdfsdsdfs$@#@$%@hgjtwea ss  rd ");
-        list.add("s4!@#$%^&*(*&^%$#@Wdfv");
-        list.add("s5 sd a");
-        list.add("s6fe }{}{}/'asd ");
-        list.add("    ");
-        list.add("s8asd");
-        list.add("s9a }s");
-        list.add("s10\"");
-
-        list.stream()
-                .flatMap(PATTERN::splitAsStream)
-                .map(line -> line.replaceAll(Controller.SPECIAL_CHARS_REGEX, Controller.EMPTY_STRING))
-                .forEach(System.out::println);
-    }
-
-
     private void loadFile(P path) {
 //        System.out.println(Thread.currentThread().getName());
         AtomicLong numOfWordsInCurrentFile = new AtomicLong(0L);
@@ -65,6 +44,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
                         .flatMap(PATTERN::splitAsStream)
                         .map(s -> s.replaceAll(Controller.SPECIAL_CHARS_REGEX, Controller.EMPTY_STRING))
                         .map(String::toLowerCase)
+                        .filter(this::isStopWord)
                         .map(Word::new)
                         .forEach(word -> processWord(numOfWordsInCurrentFile, word));
 
@@ -93,10 +73,14 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
         return Controller.STOP_WORDS.contains(word.toString());
     }
 
+    private boolean isStopWord(String word) {
+        return Controller.STOP_WORDS.contains(word);
+    }
+
     private void extractSequences(Word word) {
         word.getUnigramStream().forEach(sharedRepository::putInUnigramMap);
         word.getBigramStream().forEach(sharedRepository::putInBigramMap);
-        if(!isStopWord(word))
+//        if(!isStopWord(word))
             sharedRepository.putInWordMap(word);
     }
 
