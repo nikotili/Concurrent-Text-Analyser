@@ -9,9 +9,6 @@ public class Bigram extends Sequence {
 
     @Override
     protected void validate(String value) throws ClassCastException {
-        if (value.length() == BIGRAM_LENGTH)
-            this.setValue(value);
-        else
-            throw new ClassCastException();
+        this.setValue(value);
     }
 }
