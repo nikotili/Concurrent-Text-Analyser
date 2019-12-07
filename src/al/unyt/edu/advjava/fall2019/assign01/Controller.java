@@ -22,6 +22,7 @@ public final class Controller extends Thread {
     public static final String SPECIAL_CHARS_REGEX;
     public static final String WHITE_SPACES_REGEX;
     public static final long CONTROLLER_SLEEP_INTERVAL;
+    public static final int ELEMENTS_TO_DISPLAY;
     public static Set<String> STOP_WORDS;
     private static final SharedRepository SHARED_REPOSITORY;
     private static Controller controller;
@@ -41,6 +42,7 @@ public final class Controller extends Thread {
         EMPTY_STRING = "";
         SPECIAL_CHARS_REGEX = "[^a-zA-Z0-9]+";
         WHITE_SPACES_REGEX = "\\s+";
+        ELEMENTS_TO_DISPLAY = 5;
         CONTROLLER_SLEEP_INTERVAL = 500;
         STOP_WORDS = new HashSet<>();
         controller = new Controller();
@@ -128,15 +130,15 @@ public final class Controller extends Thread {
     }
 
     private static void printUnigrams() {
-        System.out.println("letters: " +  SHARED_REPOSITORY.getUnigramsToDisplay());
+        System.out.println("letters: " +  SHARED_REPOSITORY.getUnigramsWithLimit(ELEMENTS_TO_DISPLAY));
     }
 
     private static void printBigrams() {
-        System.out.println("pairs: " + SHARED_REPOSITORY.getBigramsToDisplay());
+        System.out.println("pairs: " + SHARED_REPOSITORY.getBigramsWithLimit(ELEMENTS_TO_DISPLAY));
     }
 
     private static void printWords() {
-        System.out.println("words: " + SHARED_REPOSITORY.getWordsToDisplay());
+        System.out.println("words: " + SHARED_REPOSITORY.getWordsWithLimit(ELEMENTS_TO_DISPLAY));
     }
 
     public static void displayErrorMessage(String message) {

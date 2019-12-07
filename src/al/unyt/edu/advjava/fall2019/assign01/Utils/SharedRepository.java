@@ -9,7 +9,6 @@ import java.util.function.LongToDoubleFunction;
 import java.util.stream.Collectors;
 
 public class SharedRepository {
-    private static final int ELEMENTS_TO_DISPLAY;
     private static SharedRepository sharedRepository;
     private Map<Unigram, AtomicLong> unigramMap;
     private Map<Bigram, AtomicLong> bigramMap;
@@ -17,7 +16,6 @@ public class SharedRepository {
     private Map<String, AtomicLong> fileWordCountMap;
 
     static {
-        ELEMENTS_TO_DISPLAY  = 5;
         sharedRepository = new SharedRepository();
     }
 
@@ -104,16 +102,16 @@ public class SharedRepository {
         putInMap(word, wordMap);
     }
 
-    public List getUnigramsToDisplay() {
-        return getSequencesToDisplay(unigramMap);
+    public List getUnigramsWithLimit(int limit) {
+        return getSequencesFromMapWithLimit(unigramMap, limit);
     }
 
-    public List getBigramsToDisplay() {
-        return getSequencesToDisplay(bigramMap);
+    public List getBigramsWithLimit(int limit) {
+        return getSequencesFromMapWithLimit(bigramMap, limit);
     }
 
-    public List getWordsToDisplay() {
-        return getSequencesToDisplay(wordMap);
+    public List getWordsWithLimit(int limit) {
+        return getSequencesFromMapWithLimit(wordMap, limit);
     }
 
     public long getCurrentTotalWordCount() {
@@ -124,16 +122,16 @@ public class SharedRepository {
         return map.values().stream().mapToLong(AtomicLong::longValue).reduce(0L, Long::sum);
     }
 
-    private <T extends Sequence> List getSequencesToDisplay(Map<T, AtomicLong> map) {
+    private <T extends Sequence> List getSequencesFromMapWithLimit(Map<T, AtomicLong> map, int limit) {
         try {
             return map.entrySet()
                     .parallelStream()
                     .sorted(new MapEntryComparator().reversed())
-                    .limit(ELEMENTS_TO_DISPLAY)
+                    .limit(limit)
                     .collect(Collectors.toList());
         }
         catch (IllegalArgumentException e) {
-            return getSequencesToDisplay(map);
+            return getSequencesFromMapWithLimit(map, limit);
         }
     }
 }
