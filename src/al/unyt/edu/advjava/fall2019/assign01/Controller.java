@@ -17,7 +17,7 @@ public final class Controller extends Thread {
     public static final String STOP_WORDS_PATH;
     public static final String NOT_A_DIRECTORY_ERROR_MESSAGE;
     public static final String EMPTY_DIRECTORY_ERROR_MESSAGE;
-    public static final String NO_PATH_ERROR;
+    public static final String NO_PATH_ERROR_MESSAGE;
     public static final String EMPTY_STRING;
     public static final String SPECIAL_CHARS_REGEX;
     public static final String WHITE_SPACES_REGEX;
@@ -38,7 +38,7 @@ public final class Controller extends Thread {
         STOP_WORDS_PATH = "stopwords.txt";
         NOT_A_DIRECTORY_ERROR_MESSAGE = "Specified path is not a directory";
         EMPTY_DIRECTORY_ERROR_MESSAGE = "No .txt files in specified path";
-        NO_PATH_ERROR = "Please specify folder path";
+        NO_PATH_ERROR_MESSAGE = "Please specify folder path";
         EMPTY_STRING = "";
         SPECIAL_CHARS_REGEX = "[^a-zA-Z0-9]+";
         WHITE_SPACES_REGEX = "\\s+";

@@ -159,3 +159,4 @@ Threads: 5, time: 10671, files: 180
 Threads: 5, time: 564, files: 3
 Threads: 5, time: 545, files: 3
 Threads: 5, time: 564, files: 3
+Threads: 5, time: 588, files: 3

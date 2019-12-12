@@ -27,7 +27,7 @@ public class TextStatistics {
             application.start(args[0]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            Controller.displayErrorMessage(Controller.NO_PATH_ERROR);
+            Controller.displayErrorMessage(Controller.NO_PATH_ERROR_MESSAGE);
         }
     }
 
