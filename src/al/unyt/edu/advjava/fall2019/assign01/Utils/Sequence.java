@@ -1,5 +1,7 @@
 package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
+import java.util.Objects;
+
 public abstract class Sequence implements Comparable {
     private String value;
     abstract protected void validate(String value) throws ClassCastException;
@@ -19,12 +21,15 @@ public abstract class Sequence implements Comparable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return value.equals(obj.toString());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sequence sequence = (Sequence) o;
+        return value.equals(sequence.value);
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        return Objects.hash(value);
     }
 }

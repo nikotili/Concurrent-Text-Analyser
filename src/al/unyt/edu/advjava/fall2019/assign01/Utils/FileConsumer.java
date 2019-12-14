@@ -44,7 +44,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
                         .flatMap(PATTERN::splitAsStream)
                         .map(s -> s.replaceAll(Controller.SPECIAL_CHARS_REGEX, Controller.EMPTY_STRING))
                         .map(String::toLowerCase)
-                        .filter(this::isStopWord)
+//                        .filter(this::isStopWord)
                         .map(Word::new)
                         .forEach(word -> processWord(numOfWordsInCurrentFile, word));
 
@@ -80,7 +80,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
     private void extractSequences(Word word) {
         word.getUnigramStream().forEach(sharedRepository::putInUnigramMap);
         word.getBigramStream().forEach(sharedRepository::putInBigramMap);
-//        if(!isStopWord(word))
+        if(!isStopWord(word))
             sharedRepository.putInWordMap(word);
     }
 

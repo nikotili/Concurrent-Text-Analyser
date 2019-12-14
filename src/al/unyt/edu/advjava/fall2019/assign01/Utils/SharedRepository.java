@@ -9,14 +9,14 @@ import java.util.function.LongToDoubleFunction;
 import java.util.stream.Collectors;
 
 public class SharedRepository {
-    private static SharedRepository sharedRepository;
+    private static final SharedRepository INSTANCE;
     private Map<Unigram, AtomicLong> unigramMap;
     private Map<Bigram, AtomicLong> bigramMap;
     private Map<Word, AtomicLong> wordMap;
     private Map<String, AtomicLong> fileWordCountMap;
 
     static {
-        sharedRepository = new SharedRepository();
+        INSTANCE = new SharedRepository();
     }
 
     private SharedRepository() {
@@ -27,7 +27,7 @@ public class SharedRepository {
     }
 
     public static SharedRepository getInstance() {
-        return sharedRepository;
+        return INSTANCE;
     }
 
 
@@ -102,15 +102,15 @@ public class SharedRepository {
         putInMap(word, wordMap);
     }
 
-    public List getUnigramsWithLimit(int limit) {
+    public List<Map.Entry<Unigram, AtomicLong>> getUnigramsWithLimit(int limit) {
         return getSequencesFromMapWithLimit(unigramMap, limit);
     }
 
-    public List getBigramsWithLimit(int limit) {
+    public List<Map.Entry<Bigram, AtomicLong>> getBigramsWithLimit(int limit) {
         return getSequencesFromMapWithLimit(bigramMap, limit);
     }
 
-    public List getWordsWithLimit(int limit) {
+    public List<Map.Entry<Word, AtomicLong>> getWordsWithLimit(int limit) {
         return getSequencesFromMapWithLimit(wordMap, limit);
     }
 
@@ -122,7 +122,7 @@ public class SharedRepository {
         return map.values().stream().mapToLong(AtomicLong::longValue).reduce(0L, Long::sum);
     }
 
-    private <T extends Sequence> List getSequencesFromMapWithLimit(Map<T, AtomicLong> map, int limit) {
+    private <T extends Sequence> List<Map.Entry<T, AtomicLong>> getSequencesFromMapWithLimit(Map<T, AtomicLong> map, int limit) {
         try {
             return map.entrySet()
                     .parallelStream()

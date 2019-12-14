@@ -1,5 +1,7 @@
 package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
+import al.unyt.edu.advjava.fall2019.assign01.Controller;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -7,11 +9,21 @@ import java.util.stream.Stream;
 public class Word extends Sequence {
 
     public Word(String value) {
-        setValue(value);
+        validate(value);
     }
     @Override
     protected void validate(String value) throws ClassCastException {
+        if (Controller.SEQUENCE_VALIDATION_ENABLED) {
+            if (value.isEmpty())
+                throw new ClassCastException();
+            value.chars().forEach(this::isSpecial);
+        }
         setValue(value);
+    }
+
+    private void isSpecial(int c) {
+        if (!Character.isAlphabetic(c) && !Character.isDigit(c))
+            throw new ClassCastException(Controller.NOT_A_WORD_ERROR_MESSAGE + " " + this);
     }
 
 
