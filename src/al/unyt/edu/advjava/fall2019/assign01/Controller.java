@@ -18,6 +18,7 @@ public final class Controller extends Thread {
 
     private static final String TXT_SUFFIX;
     public static String folderPath;
+    private static final int NUMBER_OF_THREADS;
     private static final int MAX_NUMBER_OF_TXT_FILES;
     private static final String STOP_WORDS_PATH;
     private static final String NOT_A_DIRECTORY_ERROR_MESSAGE;
@@ -47,6 +48,7 @@ public final class Controller extends Thread {
         START_TIME = Instant.now();
         TXT_SUFFIX = ".txt";
         MAX_NUMBER_OF_TXT_FILES = 1000;
+        NUMBER_OF_THREADS = 5;
         STOP_WORDS_PATH = "stopwords.txt";
         NOT_A_DIRECTORY_ERROR_MESSAGE = "Specified path is not a directory";
         EMPTY_DIRECTORY_ERROR_MESSAGE = "No .txt files in specified path";
@@ -62,7 +64,7 @@ public final class Controller extends Thread {
         ELEMENTS_TO_DISPLAY = 5;
         CONTROLLER_SLEEP_INTERVAL = 500;
         STOP_WORDS = new HashSet<>();
-        FILE_CONSUMER = new FileConsumer<>();
+        FILE_CONSUMER = new FileConsumer<>(NUMBER_OF_THREADS);
         INSTANCE = new Controller();
         SHARED_REPOSITORY = SharedRepository.getInstance();
     }
@@ -103,6 +105,7 @@ public final class Controller extends Thread {
                 printSeparator();
                 if (finished()) {
 //                    logResults();
+                    FILE_CONSUMER.shutDownExecutor();
                     System.exit(0);
                 }
             }
@@ -119,7 +122,7 @@ public final class Controller extends Thread {
     //used while testing
     private void logResults() {
         try {
-            String s = String.format("Threads: %d, time: %d, files: %d\n", FileConsumer.NUMBER_OF_THREADS, getElapsedTime(), FileConsumer.getTotalFilesCount());
+            String s = String.format("Threads: %d, time: %d, files: %d\n", NUMBER_OF_THREADS, getElapsedTime(), FileConsumer.getTotalFilesCount());
             Files.write(Paths.get("result.txt"), s.getBytes(), StandardOpenOption.APPEND);
         }
         catch (IOException e) {}

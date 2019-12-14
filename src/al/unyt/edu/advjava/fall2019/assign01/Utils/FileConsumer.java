@@ -15,19 +15,20 @@ import java.util.regex.Pattern;
 public class FileConsumer<P extends Path> implements Consumer<P> {
 
     private static final Pattern PATTERN;
-    public static final int NUMBER_OF_THREADS;
-    private static final ExecutorService THREAD_POOL;
+    private final ExecutorService THREAD_POOL;
     private static final SharedRepository sharedRepository;
     private static AtomicLong processedFilesCount;
     private static AtomicLong totalFilesCount;
 
     static {
         PATTERN = Pattern.compile(Controller.WHITE_SPACES_REGEX);
-        NUMBER_OF_THREADS = 5;
-        THREAD_POOL = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
         sharedRepository = SharedRepository.getInstance();
         totalFilesCount = new AtomicLong(0L);
         processedFilesCount = new AtomicLong(0L);
+    }
+
+    public FileConsumer(int numberOfThreads) {
+        THREAD_POOL = Executors.newFixedThreadPool(numberOfThreads);
     }
 
     @Override
@@ -95,5 +96,9 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
     public void setTotalFilesCount(long totalFilesCount) {
         FileConsumer.totalFilesCount.set(totalFilesCount);
+    }
+
+    public void shutDownExecutor() {
+        THREAD_POOL.shutdown();
     }
 }
