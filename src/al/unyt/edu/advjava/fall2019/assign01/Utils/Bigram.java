@@ -2,6 +2,10 @@ package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
 import al.unyt.edu.advjava.fall2019.assign01.Controller;
 
+/***
+ * Wraps a bigram in an object
+ */
+
 public class Bigram extends Sequence {
     public static final int BIGRAM_LENGTH = 2;
 

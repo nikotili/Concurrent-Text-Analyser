@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/***
+ * Wraps a word in an object
+ */
+
 public class Word extends Sequence {
 
     public Word(String value) {

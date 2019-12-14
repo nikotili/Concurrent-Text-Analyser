@@ -4,6 +4,11 @@ import java.util.Objects;
 
 public abstract class Sequence implements Comparable {
     private String value;
+
+    /***
+     * @param value
+     * @throws ClassCastException if {@code value} is not valid
+     */
     abstract protected void validate(String value) throws ClassCastException;
 
     protected void setValue(String value) {

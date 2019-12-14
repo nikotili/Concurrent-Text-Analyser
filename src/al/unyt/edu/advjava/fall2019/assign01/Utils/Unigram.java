@@ -2,6 +2,10 @@ package al.unyt.edu.advjava.fall2019.assign01.Utils;
 
 import al.unyt.edu.advjava.fall2019.assign01.Controller;
 
+/***
+ * Wraps an unigram in an object
+ */
+
 public class Unigram extends Sequence {
     public static final int UNIGRAM_LENGTH = 1;
 

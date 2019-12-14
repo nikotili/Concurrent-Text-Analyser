@@ -37,7 +37,6 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
 
 
     private void loadFile(P path) {
-//        System.out.println(Thread.currentThread().getName());
         AtomicLong numOfWordsInCurrentFile = new AtomicLong(0L);
         try {
                 Files.lines(path, StandardCharsets.ISO_8859_1)
@@ -73,6 +72,7 @@ public class FileConsumer<P extends Path> implements Consumer<P> {
         return Controller.STOP_WORDS.contains(word.toString());
     }
 
+    //used to filter before extracting unigrams and bigrams
     private boolean isStopWord(String word) {
         return Controller.STOP_WORDS.contains(word);
     }
