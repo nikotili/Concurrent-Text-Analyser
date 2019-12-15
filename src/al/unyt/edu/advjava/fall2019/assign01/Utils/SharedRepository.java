@@ -8,16 +8,17 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongToDoubleFunction;
 import java.util.stream.Collectors;
 
-public class SharedRepository {
+public final class SharedRepository {
     private static final SharedRepository INSTANCE;
-    private Map<Unigram, AtomicLong> unigramMap;
-    private Map<Bigram, AtomicLong> bigramMap;
-    private Map<Word, AtomicLong> wordMap;
-    private Map<String, AtomicLong> fileWordCountMap;
 
     static {
         INSTANCE = new SharedRepository();
     }
+
+    private Map<Unigram, AtomicLong> unigramMap;
+    private Map<Bigram, AtomicLong> bigramMap;
+    private Map<Word, AtomicLong> wordMap;
+    private Map<String, AtomicLong> fileWordCountMap;
 
     private SharedRepository() {
         unigramMap = new ConcurrentHashMap<>();
@@ -30,6 +31,13 @@ public class SharedRepository {
         return INSTANCE;
     }
 
+    private static double pTimesLogP(AtomicLong count, long totalCount) {
+        return count.doubleValue() / totalCount * log2(count.doubleValue() / totalCount);
+    }
+
+    private static double log2(double value) {
+        return Math.log(value) / Math.log(2);
+    }
 
     public Map<String, AtomicLong> getFileWordCountMap() {
         return fileWordCountMap;
@@ -63,7 +71,6 @@ public class SharedRepository {
         return computeAndGetSequenceEntropy(bigramMap);
     }
 
-
     private <T extends Sequence> double computeAndGetSequenceEntropy(Map<T, AtomicLong> map) {
         final long totalSequences = getCurrentTotalSequenceCount(map);
         return -1 * map
@@ -73,32 +80,25 @@ public class SharedRepository {
                 .reduce(0D, Double::sum);
     }
 
-    private static double pTimesLogP(AtomicLong count, long totalCount) {
-        return count.doubleValue() / totalCount * log2(count.doubleValue() / totalCount);
-    }
-
-    private static double log2(double value) {
-        return Math.log(value) / Math.log(2);
-    }
-
     private <T extends Sequence> void putInMap(T sequence, Map<T, AtomicLong> map) {
+        synchronized (map) {
+            if (map.containsKey(sequence))
+                map.get(sequence).incrementAndGet();
 
-        if (map.containsKey(sequence))
-            map.get(sequence).incrementAndGet();
-
-        else
-            map.put(sequence, new AtomicLong(1));
+            else
+                map.put(sequence, new AtomicLong(1));
+        }
     }
 
-    public synchronized void putInUnigramMap(Unigram unigram) {
+    public void putInUnigramMap(Unigram unigram) {
         putInMap(unigram, unigramMap);
     }
 
-    public synchronized void putInBigramMap(Bigram bigram) {
+    public void putInBigramMap(Bigram bigram) {
         putInMap(bigram, bigramMap);
     }
 
-    public synchronized void putInWordMap(Word word) {
+    public void putInWordMap(Word word) {
         putInMap(word, wordMap);
     }
 
@@ -118,7 +118,7 @@ public class SharedRepository {
         return getCurrentTotalSequenceCount(wordMap);
     }
 
-    private  <T extends Sequence> long getCurrentTotalSequenceCount(Map<T, AtomicLong> map) {
+    private <T extends Sequence> long getCurrentTotalSequenceCount(Map<T, AtomicLong> map) {
         return map.values().stream().mapToLong(AtomicLong::longValue).reduce(0L, Long::sum);
     }
 

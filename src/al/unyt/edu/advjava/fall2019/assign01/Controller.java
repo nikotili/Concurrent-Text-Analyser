@@ -18,7 +18,6 @@ public final class Controller extends Thread {
 
     private static final String TXT_SUFFIX;
     public static String folderPath;
-    private static final int NUMBER_OF_THREADS;
     private static final int MAX_NUMBER_OF_TXT_FILES;
     private static final String STOP_WORDS_PATH;
     private static final String NOT_A_DIRECTORY_ERROR_MESSAGE;
@@ -48,10 +47,9 @@ public final class Controller extends Thread {
         START_TIME = Instant.now();
         TXT_SUFFIX = ".txt";
         MAX_NUMBER_OF_TXT_FILES = 1000;
-        NUMBER_OF_THREADS = 5;
         STOP_WORDS_PATH = "stopwords.txt";
         NOT_A_DIRECTORY_ERROR_MESSAGE = "Specified path is not a directory";
-        EMPTY_DIRECTORY_ERROR_MESSAGE = "No .txt files in specified path";
+        EMPTY_DIRECTORY_ERROR_MESSAGE = "No .txt files in the specified path";
         NO_PATH_ERROR_MESSAGE = "Please specify folder path";
         MAX_NUM_OF_FILES_ALLOWED = "Maximum number of files allowed: ";
         SEQUENCE_VALIDATION_ENABLED = false;
@@ -64,9 +62,21 @@ public final class Controller extends Thread {
         ELEMENTS_TO_DISPLAY = 5;
         CONTROLLER_SLEEP_INTERVAL = 500;
         STOP_WORDS = new HashSet<>();
-        FILE_CONSUMER = new FileConsumer<>(NUMBER_OF_THREADS);
+        FILE_CONSUMER = new FileConsumer<>(getProperNumberOfThreads());
         INSTANCE = new Controller();
         SHARED_REPOSITORY = SharedRepository.getInstance();
+    }
+
+
+    /***
+     * @return The proper number of threads to be created and used to read the files.
+     * Since one thread is the {@code this.INSTANCE} and one is the main-thread of the
+     * application, the number which is returned, is available processors count minus two.
+     * (not 100% sure)
+     */
+    private static int getProperNumberOfThreads() {
+        System.out.println(Runtime.getRuntime().availableProcessors());
+        return Runtime.getRuntime().availableProcessors() - 2;
     }
 
     private Controller() {
@@ -92,9 +102,6 @@ public final class Controller extends Thread {
                 if (!finished()) {
                     printProcessingFilesCount();
                 }
-                else {
-                    printWordAnalysis();
-                }
 
                 printUnigrams();
                 printBigrams();
@@ -102,9 +109,10 @@ public final class Controller extends Thread {
                 printUnigramEntropy();
                 printBigramEntropy();
 
-                printSeparator();
                 if (finished()) {
 //                    logResults();
+                    printWordAnalysis();
+                    printSeparator();
                     FILE_CONSUMER.shutDownExecutor();
                     System.exit(0);
                 }
@@ -122,7 +130,7 @@ public final class Controller extends Thread {
     //used while testing
     private void logResults() {
         try {
-            String s = String.format("Threads: %d, time: %d, files: %d\n", NUMBER_OF_THREADS, getElapsedTime(), FileConsumer.getTotalFilesCount());
+            String s = String.format("Threads: %d, time: %d, files: %d\n", getProperNumberOfThreads(), getElapsedTime(), FileConsumer.getTotalFilesCount());
             Files.write(Paths.get("result.txt"), s.getBytes(), StandardOpenOption.APPEND);
         }
         catch (IOException e) {}
