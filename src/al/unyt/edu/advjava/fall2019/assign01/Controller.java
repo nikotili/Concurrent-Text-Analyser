@@ -69,13 +69,13 @@ public final class Controller extends Thread {
 
 
     /***
-     * @return The proper number of threads to be created and used to read the files.
+     * Returns the proper number of threads to be created and used to read the files.
      * Since one thread is the {@code this.INSTANCE} and one is the main-thread of the
      * application, the number which is returned, is available processors count minus two.
      * (not 100% sure)
+     * @return proper number of threads
      */
     private static int getProperNumberOfThreads() {
-        System.out.println(Runtime.getRuntime().availableProcessors());
         return Runtime.getRuntime().availableProcessors() - 2;
     }
 
